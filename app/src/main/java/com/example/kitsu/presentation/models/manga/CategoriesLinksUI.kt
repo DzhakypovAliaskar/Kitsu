@@ -1,0 +1,11 @@
+package com.example.kitsu.presentation.models.manga
+
+import com.example.kitsu.domain.models.manga.LinksXXModel
+
+
+data class LinksXXUI(
+    val self: String,
+    val related: String
+)
+
+fun LinksXXModel.toUI() = LinksXXUI(self, related)
