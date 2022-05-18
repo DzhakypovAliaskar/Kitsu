@@ -15,5 +15,4 @@ interface AnimeApiService {
 
     @GET("anime/{id}")
     suspend fun fetchAnime(@Path("id") id: String): SingleAnimeDto
-
 }

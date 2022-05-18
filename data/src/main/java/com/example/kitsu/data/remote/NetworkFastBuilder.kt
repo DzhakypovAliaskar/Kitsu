@@ -2,6 +2,7 @@ package com.example.kitsu.data.remote
 
 import com.example.kitsu.BuildConfig
 import com.example.kitsu.data.local.preferences.PreferencesHelper
+import com.example.kitsu.data.remote.authenticator.RefreshTokenAuthenticator
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -22,21 +23,27 @@ class NetworkFastBuilder @Inject constructor() {
         .addConverterFactory(GsonConverterFactory.create())
         .client(okHttpClient)
         .build()
-
-
 }
 
+
 class OkHttp @Inject constructor() {
-    fun provideOkHttpClient(authenticationInterceptor: AuthenticationInterceptor? = null): OkHttpClient {
-        val okHttpClient = OkHttpClient(
-        )
+    fun provideOkHttpClient(
+        authenticationInterceptor: AuthenticationInterceptor? = null,
+//        refreshTokenAuthenticator: RefreshTokenAuthenticator
+    ): OkHttpClient {
+        val okHttpClient = OkHttpClient()
             .newBuilder()
+//            .authenticator(refreshTokenAuthenticator)
             .addInterceptor(provideLoggingInterceptor())
+            .callTimeout(30, TimeUnit.SECONDS)
             .connectTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
-        authenticationInterceptor?.let { okHttpClient.addInterceptor(authenticationInterceptor) }
+        authenticationInterceptor?.let {
+            okHttpClient.addInterceptor(authenticationInterceptor)
+        }
         return okHttpClient.build()
+
     }
 
 
@@ -60,11 +67,5 @@ class OkHttp @Inject constructor() {
                 .build()
             return chain.proceed(request)
         }
-
-
     }
-
 }
-
-
-
